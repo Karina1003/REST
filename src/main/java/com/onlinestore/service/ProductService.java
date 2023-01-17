@@ -1,6 +1,7 @@
 package com.onlinestore.service;
 
 import com.onlinestore.entity.Product;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ public interface ProductService {
     public void updateProduct(Product product);
 
     public void deleteProduct(Product product);
-    
+
+    public Page<Product> findByFilter (int page, int size);
 }

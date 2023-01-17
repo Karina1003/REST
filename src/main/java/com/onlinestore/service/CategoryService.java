@@ -13,6 +13,5 @@ public interface CategoryService {
 
     public void updateCategory(Category category);
 
-    public void deleteCategory(Category category);
     public List<Product> findProducts (long id);
 }

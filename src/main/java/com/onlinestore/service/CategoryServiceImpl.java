@@ -36,12 +36,6 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.save(category);
     }
 
-    //TODO: throw products to other category or delete method
-    @Override
-    public void deleteCategory(Category category) {
-        categoryRepository.delete(category);
-    }
-
     @Override
     public List<Product> findProducts(long id) {
         Category category = categoryRepository.findById(id).
