@@ -14,5 +14,5 @@ public interface ProductService {
 
     public void deleteProduct(Product product);
 
-    public Page<Product> findByFilter (int page, int size);
+    public Page<Product> findByFilter (int page, int size, String name, String description);
 }

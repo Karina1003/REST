@@ -50,7 +50,8 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public Page<Product> findByFilter (@RequestParam int page, @RequestParam int size) {
-        return productService.findByFilter(page, size);
+    public Page<Product> findByFilter (@RequestParam int page, @RequestParam int size,
+                                       @RequestParam String name, @RequestParam String description) {
+            return productService.findByFilter(page, size, name, description);
     }
 }

@@ -51,9 +51,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> findByFilter (int page, int size) {
+    public Page<Product> findByFilter (int page, int size, String name, String description) {
         Pageable searchPage = PageRequest.of(page,size);
-        return productRepository.findAll(searchPage);
+        if (name != null && !name.equals("") && description != null && !description.equals("")) {
+            return productRepository.findAllByNameAndDescription(searchPage, name, description);
+        } else if ((name == null || name.equals("")) &&
+                   (description != null && !description.equals(""))) {
+            return productRepository.findAllByDescription(searchPage, description);
+        } else return productRepository.findAllByName(searchPage, name);
     }
 
 }
