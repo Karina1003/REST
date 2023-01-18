@@ -3,6 +3,7 @@ package com.onlinestore.controller;
 import com.onlinestore.entity.Product;
 import com.onlinestore.service.CategoryService;
 import com.onlinestore.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,17 +27,19 @@ public class ProductController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(String name, String description, long categoryId) {
+    public Product createProduct(@Valid String name, String description, Long categoryId) {
+        System.out.println("Controller " + name + " " + description );
+        System.out.println(categoryId);
         return productService.createProduct(name, description, categoryId);
     }
 
     @GetMapping("/{id}")
-    public Product getProduct(@PathVariable long id) {
+    public Product getProduct(@PathVariable Long id) {
         return productService.getProduct(id);
     }
 
     @PutMapping("/update/{id}")
-    public void updateProduct(@PathVariable long id, String name, String description, long categoryId) {
+    public void updateProduct(@PathVariable Long id, @Valid String name, String description, Long categoryId) {
         Product product = productService.getProduct(id);
         product.setName(name);
         product.setDescription(description);
@@ -45,7 +48,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteProduct(@PathVariable long id) {
+    public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(productService.getProduct(id));
     }
 

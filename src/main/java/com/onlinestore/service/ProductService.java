@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface ProductService {
-    public Product createProduct(String name, String description, long categoryId);
+    public Product createProduct(String name, String description, Long categoryId);
 
-    public Product getProduct(long id);
+    public Product getProduct(Long id);
 
     public void updateProduct(Product product);
 

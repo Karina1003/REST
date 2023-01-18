@@ -9,7 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +24,8 @@ import java.util.Objects;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+    @NotBlank(message = "enter product name")
     private String name;
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +33,6 @@ public class Product {
     @JsonBackReference
     private Category category;
 
-    @NotNull
     public Product(String name) {
         this.name = name;
     }
@@ -62,7 +62,6 @@ public class Product {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", category=" + category.getName() +
                 '}';
     }
 }

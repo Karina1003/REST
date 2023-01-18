@@ -9,9 +9,9 @@ public interface CategoryService {
 
     public Category createCategory(String name);
 
-    public Category getCategory(long id);
+    public Category getCategory(Long id);
 
     public void updateCategory(Category category);
 
-    public List<Product> findProducts (long id);
+    public List<Product> findProducts (Long id);
 }

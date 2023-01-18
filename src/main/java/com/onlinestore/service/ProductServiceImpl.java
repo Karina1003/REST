@@ -21,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
     CategoryRepository categoryRepository;
 
     @Override
-    public Product createProduct (String name, String description, long categoryId) {
+    public Product createProduct (String name, String description, Long categoryId) {
         Product product = new Product();
         product.setName(name);
         product.setDescription(description);
@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProduct(long id) {
+    public Product getProduct(Long id) {
         return productRepository.findById(id).
                 orElseThrow(()->new NoSuchElementException("No product found"));
     }

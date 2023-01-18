@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategory(long id) {
+    public Category getCategory(Long id) {
         return categoryRepository.findById(id).
                 orElseThrow(()-> new NoSuchElementException("No such category"));
     }
@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Product> findProducts(long id) {
+    public List<Product> findProducts(Long id) {
         Category category = categoryRepository.findById(id).
                 orElseThrow(()-> new NoSuchElementException("No such category"));
         return category.getProducts();
