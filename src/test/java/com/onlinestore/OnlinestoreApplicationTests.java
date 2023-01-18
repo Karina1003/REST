@@ -5,6 +5,8 @@ import com.onlinestore.entity.Category;
 import com.onlinestore.entity.Product;
 import com.onlinestore.repository.CategoryRepository;
 import com.onlinestore.repository.ProductRepository;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -63,7 +65,7 @@ class OnlinestoreApplicationTests {
 
 	@Test
 	public void testUpdateProduct() throws Exception {
-		Long idToFind = 20L;
+		Long idToFind = 10L;
 		String name = "UpdatedProduct";
 		String description = "descriptionNew";
 		Long categoryId = 2L;
@@ -82,10 +84,77 @@ class OnlinestoreApplicationTests {
 
 	@Test
 	public void testDeleteProduct() throws Exception{
-		Long idToDelete = 9L;
+		Long idToDelete = 2L;
 		mockMvc.perform(MockMvcRequestBuilders.delete(
 				"/product/delete/"+idToDelete));
 		Assertions.assertThrows(NoSuchElementException.class,()->productRepository.findById(idToDelete)
 				.orElseThrow(()-> new NoSuchElementException()));
+	}
+
+	@Test
+	public void testFindByFilter() throws Exception {
+		int page = 0;
+		int size = 2;
+		String name = "Table";
+		String description = "";
+		Long categoryId = 2L;
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(
+						"/product/list?page="+page+"&size="+size+"&name="+name+"&description="+description))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+				.andReturn();
+		String response = mvcResult.getResponse().getContentAsString();
+		JSONObject jsonObject = new JSONObject(response);
+		String resultArray = jsonObject.getJSONArray("content").toString();
+		Assertions.assertTrue(resultArray.contains(name));
+	}
+
+	@Test
+	public void testCreateCategory() throws Exception {
+		String name = "CategoryTest";
+		String description = "";
+		Long categoryId = 1L;
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(
+						"/category/create?name="+name+"&description="+description+"&categoryId="+categoryId))
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andReturn();
+		String response = mvcResult.getResponse().getContentAsString();
+		Category categoryResult = objectMapper.readValue(response, Category.class);
+		Assertions.assertEquals(name, categoryResult.getName());
+	}
+
+	@Test
+	public void testGetCategory() {
+		String name = "CategoryTestGet";
+		Category categoryCreated = categoryRepository.save(new Category(name));
+		Category categoryExpected = categoryRepository.findById(categoryCreated.getId())
+				.orElseThrow(()->new NoSuchElementException());
+		Assertions.assertEquals(categoryExpected.getId(), categoryCreated.getId());
+	}
+
+	@Test
+	public void testUpdateCategory() throws Exception {
+		Long idToFind = 5L;
+		String name = "UpdatedCategory";
+		Category categoryToUpdate = categoryRepository.findById(idToFind)
+				.orElseThrow(()->new NoSuchElementException());
+		categoryToUpdate.setName(name);
+		mockMvc.perform(MockMvcRequestBuilders.put(
+				"/category/update/"+idToFind+"?name="+name));
+		Category categoryAfterUpdate = categoryRepository.findById(idToFind)
+				.orElseThrow(()->new NoSuchElementException());
+		Assertions.assertEquals(categoryToUpdate.getName(), categoryAfterUpdate.getName());
+	}
+
+	@Test
+	public void testProductList() throws Exception {
+		Long id = 2L;
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(
+						"/category/"+id+"/products"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+				.andReturn();
+		String response = mvcResult.getResponse().getContentAsString();
+		System.out.println(response);
 	}
 }
