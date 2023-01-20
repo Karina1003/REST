@@ -1,18 +1,17 @@
 package com.onlinestore.service;
 
-import com.onlinestore.entity.Product;
+import com.onlinestore.dto.ProductDetailsDto;
+import com.onlinestore.dto.ProductSaveDto;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface ProductService {
-    public Product createProduct(String name, String description, Long categoryId);
+    public ProductSaveDto createProduct(String name, String description, Long categoryId);
 
-    public Product getProduct(Long id);
+    public ProductDetailsDto getProduct(Long id);
 
-    public void updateProduct(Product product);
+    public void updateProduct(Long id, ProductSaveDto productSaveDto);
 
-    public void deleteProduct(Product product);
+    public void deleteProduct(ProductDetailsDto productDetailsDto);
 
-    public Page<Product> findByFilter (int page, int size, String name, String description);
+    public Page<ProductDetailsDto> findByFilter (int page, int size, String name, String description);
 }

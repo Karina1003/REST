@@ -1,5 +1,8 @@
 package com.onlinestore.service;
 
+import com.onlinestore.dto.CategoryDetailsDto;
+import com.onlinestore.dto.CategorySaveDto;
+import com.onlinestore.dto.ProductDetailsDto;
 import com.onlinestore.entity.Category;
 import com.onlinestore.entity.Product;
 
@@ -7,11 +10,11 @@ import java.util.List;
 
 public interface CategoryService {
 
-    public Category createCategory(String name);
+    public CategorySaveDto createCategory(String name);
 
-    public Category getCategory(Long id);
+    public CategoryDetailsDto getCategory(Long id);
 
-    public void updateCategory(Category category);
+    public void updateCategory(Long id, CategorySaveDto categorySaveDto);
 
-    public List<Product> findProducts (Long id);
+    public List<ProductDetailsDto> findProducts (Long id);
 }

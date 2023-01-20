@@ -1,5 +1,8 @@
 package com.onlinestore.controller;
 
+import com.onlinestore.dto.CategoryDetailsDto;
+import com.onlinestore.dto.CategorySaveDto;
+import com.onlinestore.dto.ProductDetailsDto;
 import com.onlinestore.entity.Category;
 import com.onlinestore.entity.Product;
 import com.onlinestore.service.CategoryService;
@@ -24,24 +27,23 @@ public class CategoryController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Category createCategory(String name) {
+    public CategorySaveDto createCategory(String name) {
         return categoryService.createCategory(name);
     }
 
     @GetMapping("/{id}")
-    public Category getCategory(@PathVariable Long id) {
+    public CategoryDetailsDto getCategory(@PathVariable Long id) {
         return categoryService.getCategory(id);
     }
 
     @PutMapping("/update/{id}")
     public void updateCategory(@PathVariable Long id, String name) {
-        Category category = categoryService.getCategory(id);
-        category.setName(name);
-        categoryService.updateCategory(category);
+        CategorySaveDto categorySaveDto = new CategorySaveDto(name);
+        categoryService.updateCategory(id, categorySaveDto);
     }
 
     @GetMapping("/{id}/products")
-    public List<Product> getProducts(@PathVariable Long id) {
+    public List<ProductDetailsDto> getProducts(@PathVariable Long id) {
         return categoryService.findProducts(id);
     }
 }

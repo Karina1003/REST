@@ -1,15 +1,18 @@
 package com.onlinestore.service;
 
+import com.onlinestore.dto.IdentifiedName;
+import com.onlinestore.dto.ProductDetailsDto;
+import com.onlinestore.dto.ProductSaveDto;
 import com.onlinestore.entity.Category;
 import com.onlinestore.entity.Product;
 import com.onlinestore.repository.CategoryRepository;
 import com.onlinestore.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.NoSuchElementException;
 
@@ -21,44 +24,71 @@ public class ProductServiceImpl implements ProductService {
     CategoryRepository categoryRepository;
 
     @Override
-    public Product createProduct (String name, String description, Long categoryId) {
-        Product product = new Product();
-        product.setName(name);
-        product.setDescription(description);
-        Category category = categoryRepository.findById(categoryId).
-                orElseThrow(()->new NoSuchElementException());
+    @Transactional
+    public ProductSaveDto createProduct (String name, String description, Long categoryId) {
+        ProductSaveDto productSaveDto = new ProductSaveDto(name, description, categoryId);
+        Category category = categoryRepository.findById(productSaveDto.getCategoryId()).
+                orElseThrow(()->new NoSuchElementException("No group with such id"));
+        productRepository.save(new Product(productSaveDto.getName(), productSaveDto.getDescription(), category));
+        return productSaveDto;
+    }
+
+    @Override
+    @Transactional
+    public ProductDetailsDto getProduct(Long id) {
+         Product product = productRepository.findById(id)
+                         .orElseThrow(()->new NoSuchElementException("No product found"));
+         return convertToDetailsDto(product);
+    }
+
+    @Override
+    @Transactional
+    public void updateProduct(Long id, ProductSaveDto productSaveDto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(()->new NoSuchElementException("No product found"));
+        product.setName(productSaveDto.getName());
+        product.setDescription(productSaveDto.getDescription());
+        Category category = categoryRepository.findById(productSaveDto.getCategoryId()).
+                orElseThrow(()->new NoSuchElementException("No group with such id"));
         product.setCategory(category);
         productRepository.save(product);
-        return product;
     }
 
     @Override
-    public Product getProduct(Long id) {
-        return productRepository.findById(id).
-                orElseThrow(()->new NoSuchElementException("No product found"));
-    }
-
-    @Override
-    public void updateProduct(Product product) {
-        Product productOld = productRepository.findById(product.getId()).
-                orElseThrow(()->new NoSuchElementException("No product found for update"));
-        productRepository.save(product);
-    }
-
-    @Override
-    public void deleteProduct(Product product) {
+    @Transactional
+    public void deleteProduct(ProductDetailsDto productDetailsDto) {
+        Product product = productRepository.findById(productDetailsDto.getId())
+                .orElseThrow(()->new NoSuchElementException("No product found for deletion"));
         productRepository.delete(product);
     }
 
     @Override
-    public Page<Product> findByFilter (int page, int size, String name, String description) {
+    @Transactional
+    public Page<ProductDetailsDto> findByFilter (int page, int size, String name, String description) {
         Pageable searchPage = PageRequest.of(page,size);
+        Page<Product> pageProduct = null;
         if (name != null && !name.equals("") && description != null && !description.equals("")) {
-            return productRepository.findAllByNameAndDescription(searchPage, name, description);
+            pageProduct = productRepository.findAllByNameAndDescription(searchPage, name, description);
         } else if ((name == null || name.equals("")) &&
                    (description != null && !description.equals(""))) {
-            return productRepository.findAllByDescription(searchPage, description);
-        } else return productRepository.findAllByName(searchPage, name);
+            pageProduct = productRepository.findAllByDescription(searchPage, description);
+        } else pageProduct = productRepository.findAllByName(searchPage, name);
+        return pageProduct.map(this::convertToDetailsDto);
+    }
+
+    public static IdentifiedName returnIdentifiedName(Category category) {
+        if (category == null) {
+            return null;
+        } else return new IdentifiedName(category.getId(), category.getName());
+    }
+
+    private ProductDetailsDto convertToDetailsDto(Product product) {
+        return ProductDetailsDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .category(returnIdentifiedName(product.getCategory()))
+                .build();
     }
 
 }

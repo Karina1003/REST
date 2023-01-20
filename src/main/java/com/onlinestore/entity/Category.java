@@ -27,11 +27,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "enter product name")
+    @NotBlank(message = "enter category name")
     private String name;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     @JsonManagedReference
-    private List<Product> products = new ArrayList<>();
+    private List<Product> products;
 
     public Category(String name) {
         this.name = name;

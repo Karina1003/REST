@@ -1,5 +1,6 @@
 package com.onlinestore.repository;
 
+import com.onlinestore.dto.ProductDetailsDto;
 import com.onlinestore.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -57,7 +57,10 @@ class OnlinestoreApplicationTests {
 	@Test
 	public void testGetProduct() {
 		String name = "TestProductGet";
-		Product productCreated = productRepository.save(new Product(name));
+		String description = "";
+		Category category = categoryRepository.findById(1L)
+				.orElseThrow(()->new NoSuchElementException());
+		Product productCreated = productRepository.save(new Product(name, description, category));
 		Product productExpected = productRepository.findById(productCreated.getId())
 				.orElseThrow(()->new NoSuchElementException());
 		Assertions.assertEquals(productExpected, productCreated);
@@ -84,7 +87,12 @@ class OnlinestoreApplicationTests {
 
 	@Test
 	public void testDeleteProduct() throws Exception{
-		Long idToDelete = 2L;
+		String name = "TestProductDelete";
+		String description = "";
+		Category category = categoryRepository.findById(1L)
+				.orElseThrow(()->new NoSuchElementException());
+		Product productToDelete = productRepository.save(new Product(name, description, category));
+		Long idToDelete = productToDelete.getId();
 		mockMvc.perform(MockMvcRequestBuilders.delete(
 				"/product/delete/"+idToDelete));
 		Assertions.assertThrows(NoSuchElementException.class,()->productRepository.findById(idToDelete)

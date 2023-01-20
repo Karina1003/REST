@@ -1,12 +1,14 @@
 package com.onlinestore.controller;
 
-import com.onlinestore.entity.Product;
+import com.onlinestore.dto.ProductDetailsDto;
+import com.onlinestore.dto.ProductSaveDto;
 import com.onlinestore.service.CategoryService;
 import com.onlinestore.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
+@Validated
 @RequestMapping("product")
 public class ProductController {
     @Autowired
@@ -27,24 +30,19 @@ public class ProductController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@Valid String name, String description, Long categoryId) {
-        System.out.println("Controller " + name + " " + description );
-        System.out.println(categoryId);
+    public ProductSaveDto createProduct(@Valid String name, String description, @Valid Long categoryId) {
         return productService.createProduct(name, description, categoryId);
     }
 
     @GetMapping("/{id}")
-    public Product getProduct(@PathVariable Long id) {
+    public ProductDetailsDto getProduct(@PathVariable Long id) {
         return productService.getProduct(id);
     }
 
     @PutMapping("/update/{id}")
-    public void updateProduct(@PathVariable Long id, @Valid String name, String description, Long categoryId) {
-        Product product = productService.getProduct(id);
-        product.setName(name);
-        product.setDescription(description);
-        product.setCategory(categoryService.getCategory(categoryId));
-        productService.updateProduct(productService.getProduct(id));
+    public void updateProduct(@PathVariable @Valid Long id, @Valid String name, String description, @Valid Long categoryId) {
+        ProductSaveDto productSaveDto = new ProductSaveDto(name, description, categoryId);
+        productService.updateProduct(id, productSaveDto);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -53,7 +51,7 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public Page<Product> findByFilter (@RequestParam int page, @RequestParam int size,
+    public Page<ProductDetailsDto> findByFilter (@RequestParam int page, @RequestParam int size,
                                        @RequestParam String name, @RequestParam String description) {
             return productService.findByFilter(page, size, name, description);
     }
